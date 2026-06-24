@@ -1,0 +1,26 @@
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+api_key = os.environ.get("DEEPSEEK_API_KEY")
+ai = OpenAI(api_key=api_key,base_url = "https://api.deepseek.com")
+
+print("===欢迎使用deepseek（按‘q’退出）===")
+rem = []
+rem.append({"role":"system","content":"你是一个暴躁的机器人"})
+while True:
+    ask = input("输入您的问题\n")
+    if ask.lower() == "q":
+        print("程序退出了")
+        break
+    rem.append({"role":"user","content":ask})
+
+    answer = ai.chat.completions.create(
+        model = "deepseek-chat",
+        messages = rem
+    )
+    ai_answer = answer.choices[0].message.content
+    print({ai_answer})
+    rem.append({"role":"assistant","content":ai_answer})

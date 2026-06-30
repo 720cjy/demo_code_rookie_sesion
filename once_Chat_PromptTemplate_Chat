@@ -1,0 +1,21 @@
+import os
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+
+load_dotenv()
+api = os.getenv("DEEPSEEK_API_KEY")
+
+prompt_template = PromptTemplate.from_template(
+    "我的邻居姓{last_name},生了一个{gender},取个名字不要其他信息"
+)
+model = ChatOpenAI(
+    api_key = api,
+    base_url="https://api.deepseek.com",
+    model   = "deepseek-v4-pro"
+)
+
+chain = prompt_template | model
+
+res = chain.invoke({"last_name":"蔡","gender":"男孩"})
+print(res.content)

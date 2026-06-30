@@ -1,0 +1,20 @@
+import os
+from dotenv import load_dotenv
+from langchain_openai import  ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
+
+load_dotenv()
+api = os.getenv("DEEPSEEK_API_KEY")
+
+chat_prompt = ChatPromptTemplate([("system","你是个边塞诗人"),
+                                  MessagesPlaceholder("history",optianal = True),
+                                  ("human","你也做一首诗吧")]
+)
+history_data = [("human","写一首唐诗"),
+                ("ai","锄禾日当午，汗滴禾下土")]
+model = ChatOpenAI(api_key = api,
+                   base_url= "https://api.deepseek.com",
+                   model = "deepseek-v4-pro")
+chain = chat_prompt | model
+res = chain.invoke({"history":history_data})
+print(res.content)

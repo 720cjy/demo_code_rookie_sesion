@@ -1,0 +1,29 @@
+import os
+from dotenv import load_dotenv
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain_core.runnables import RunnableLambda
+
+load_dotenv()
+api = os.getenv("DEEPSEEK_API_KEY")
+str_Parser = StrOutputParser()
+
+first_prompt = PromptTemplate.from_template(
+    "邻居家姓{last_name},生了一个{gender},帮忙取个名字。只要一个名字其他都不用"
+)
+
+second_prompt = PromptTemplate.from_template(
+    "姓名{name}，解释一下他的含义"
+)
+
+model = ChatOpenAI(api_key = api,
+               base_url="https://api.deepseek.com",
+               model = "deepseek-v4-pro")
+
+my_func = RunnableLambda(lambda ai_mes:{"name",ai_mes.content})
+chain = first_prompt | model | my_func | second_prompt | model |str_Parser
+
+res = chain.stream({"last_name":"蔡","gender":"男孩"})
+for chunk in res:
+    print(chunk,end='',flush=True)

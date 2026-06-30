@@ -1,0 +1,26 @@
+import  os
+from dotenv import load_dotenv
+from langchain_core.prompts import PromptTemplate,FewShotPromptTemplate
+from langchain_openai import ChatOpenAI
+
+load_dotenv()
+api = os.getenv("DEEPSEEK_API_KEY")
+
+example_template = PromptTemplate.from_template("单词{word},反义词{antonym}")
+example_date = [
+    {"word":"男","antonym":"女"},
+    {"word":"上","antonym":"下"}
+]
+Few_Shot_promptTemplate = FewShotPromptTemplate(
+    examples = example_date,
+    example_prompt= example_template,
+    prefix = "根据下列提示词给出单词的反义词",
+    suffix = "基于前面事例，给我{input_word}的反义词",
+    input_variables = ["input_word"]
+)
+model = ChatOpenAI(model = "deepseek-v4-pro",
+                   base_url ="https://api.deepseek.com",
+                   api_key = api)
+chain = Few_Shot_promptTemplate  | model
+res = chain.invoke({"input_word":"左"})
+print(res.content)

@@ -1,0 +1,20 @@
+import streamlit as st
+
+st.title("服装商品智能客服")
+st.divider()
+#文件上传
+upload_file = st.file_uploader(
+    "请上传txt文件",
+    accept_multiple_files=False,
+    type=["txt"]
+)
+if upload_file is not None:
+    file_name = upload_file.name,
+    file_type = upload_file.type,
+    file_size = upload_file.size/1024
+
+    st.subheader(f"文件名{file_name}")
+    st.write(f"格式{file_type}｜大小{file_size:.2f}KB")
+    #get_value得到byte 类型，然后decode进行解码
+    text = upload_file.getvalue().decode("utf-8")
+    st.write(text)
